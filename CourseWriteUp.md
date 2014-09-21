@@ -1,43 +1,31 @@
-Human Activity Recognition
+Human Activity Recognition Predictive Model Build
 ========================================================
-    ### Introduction
-    ### Read and Prepare Data
-    
-    ```r
-    #Knitr prep
-    library(caret);library(randomForest)
-    ```
-    
-    ```
-    ## Warning: package 'caret' was built under R version 3.1.1
-    ```
-    
-    ```
-    ## Loading required package: lattice
-    ## Loading required package: ggplot2
-    ## randomForest 4.6-7
-    ## Type rfNews() to see new features/changes/bug fixes.
-    ```
-    
-    ```r
-    training<- read.csv("pml-training.csv",header=T)
-    training[training=="#DIV/0!"]<-NA
-    columnNAsBlanks<-colSums(training==""|is.na(training),na.rm=T)/dim(training)[1]*100
-    variablesExclude<-names(columnNAsBlanks[columnNAsBlanks>60])
-    training<-training[,!names(training)%in%variablesExclude]
-    variablesInclude<-names(training)[grepl("_belt|_forearm|_arm|_dumbell|classe",names(training))]
-    training<-training[,names(training)%in%variablesInclude]
-    
-    
-    testing<- read.csv("pml-testing.csv",header=T)
-    testing[testing=="#DIV/0!"]<-NA
-    testing<-testing[,names(testing) %in% names(training)]
-    
-    set.seed(4444)
-    sample<-sample(nrow(training),10000)
-    training<-training[sample,]
-    ```
-Variables exhibiting high levels of sparsity, as defined by having over 60 percent of observations consisting of NA or 0, are removed from the analysis.  Thereafter, only variables pertaining to belt, forearm, arm and dumbbell sensors, in addition to the predictor (classe), are included.  Lastly, a random sample of 10,000 is drawn to ease computation constrain.
+### Introduction
+In this analysis we take data from exercising participants and try to build a predictive model to identify the manner in which an exercise was preformed as identified by the "classe" variable.  We consider two algorithms (classification trees and random forest) in building the predictive model and select the most optimal.
+
+### Read and Prepare Data
+
+```r
+library(caret);library(randomForest)
+
+training<- read.csv("pml-training.csv",header=T)
+training[training=="#DIV/0!"]<-NA
+columnNAsBlanks<-colSums(training==""|is.na(training),na.rm=T)/dim(training)[1]*100
+variablesExclude<-names(columnNAsBlanks[columnNAsBlanks>60])
+training<-training[,!names(training)%in%variablesExclude]
+variablesInclude<-names(training)[grepl("_belt|_forearm|_arm|_dumbell|classe",names(training))]
+training<-training[,names(training)%in%variablesInclude]
+
+
+testing<- read.csv("pml-testing.csv",header=T)
+testing[testing=="#DIV/0!"]<-NA
+testing<-testing[,names(testing) %in% names(training)]
+
+set.seed(4444)
+sample<-sample(nrow(training),10000)
+training<-training[sample,]
+```
+Variables exhibiting high levels of sparsity, as defined by over 60 percent of observations consisting of NA or 0, are removed from the analysis.  Thereafter, only variables pertaining to belt, forearm, arm and dumbbell sensors, in addition to the predictor (classe), are included.  Lastly, a random sample of 10,000 is drawn to ease computation constrain.
 
 
 ### Cross Validation   
@@ -133,4 +121,4 @@ modFit_rf_final<-randomForest(classe~.,prox=T, data=training,ntree=50)
 
 answers<-predict(modFit_rf_final,newdata=testing)
 ```
-The random forest model seems to be the better approach as judged by accuracy and expected error.  Thus a final model is generated from all 10,000 observations.  The final random forest model is put to the testing data and predications are generated: B, A, B, A, A, E, D, B, A, A, B, C, B, A, E, E, A, B, B, B. 
+The random forest model seems to be the better approach as judged by accuracy and expected error.  Thus a final model is generated from all 10,000 observations.   The final random forest model is put to the testing data and predications are generated: B, A, B, A, A, E, D, B, A, A, B, C, B, A, E, E, A, B, B, B. 

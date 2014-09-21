@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="x-ua-compatible" content="IE=9" >
 
-<title>Human Activity Recognition</title>
+<title>Human Activity Recognition Predictive Model Build</title>
 
 <style type="text/css">
 body, td {
@@ -179,28 +179,16 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
-<h1>Human Activity Recognition</h1>
+<h1>Human Activity Recognition Predictive Model Build</h1>
 
-<pre><code>### Introduction
-### Read and Prepare Data
+<h3>Introduction</h3>
 
-```r
-#Knitr prep
-library(caret);library(randomForest)
-```
+<p>In this analysis we take data from exercising participants and try to build a predictive model to identify the manner in which an exercise was preformed as identified by the &ldquo;classe&rdquo; variable.  We consider two algorithms (classification trees and random forest) in building the predictive model and select the most optimal.</p>
 
-```
-## Warning: package &#39;caret&#39; was built under R version 3.1.1
-```
+<h3>Read and Prepare Data</h3>
 
-```
-## Loading required package: lattice
-## Loading required package: ggplot2
-## randomForest 4.6-7
-## Type rfNews() to see new features/changes/bug fixes.
-```
+<pre><code class="r">library(caret);library(randomForest)
 
-```r
 training&lt;- read.csv(&quot;pml-training.csv&quot;,header=T)
 training[training==&quot;#DIV/0!&quot;]&lt;-NA
 columnNAsBlanks&lt;-colSums(training==&quot;&quot;|is.na(training),na.rm=T)/dim(training)[1]*100
@@ -217,10 +205,9 @@ testing&lt;-testing[,names(testing) %in% names(training)]
 set.seed(4444)
 sample&lt;-sample(nrow(training),10000)
 training&lt;-training[sample,]
-```
 </code></pre>
 
-<p>Variables exhibiting high levels of sparsity, as defined by having over 60 percent of observations consisting of NA or 0, are removed from the analysis.  Thereafter, only variables pertaining to belt, forearm, arm and dumbbell sensors, in addition to the predictor (classe), are included.  Lastly, a random sample of 10,000 is drawn to ease computation constrain.</p>
+<p>Variables exhibiting high levels of sparsity, as defined by over 60 percent of observations consisting of NA or 0, are removed from the analysis.  Thereafter, only variables pertaining to belt, forearm, arm and dumbbell sensors, in addition to the predictor (classe), are included.  Lastly, a random sample of 10,000 is drawn to ease computation constrain.</p>
 
 <h3>Cross Validation</h3>
 
@@ -300,7 +287,7 @@ ExpOutSampleError_rf&lt;-1-ExpOutSampleAccuracy_rf
 answers&lt;-predict(modFit_rf_final,newdata=testing)
 </code></pre>
 
-<p>The random forest model seems to be the better approach as judged by accuracy and expected error.  Thus a final model is generated from all 10,000 observations.  The final random forest model is put to the testing data and predications are generated: B, A, B, A, A, E, D, B, A, A, B, C, B, A, E, E, A, B, B, B. </p>
+<p>The random forest model seems to be the better approach as judged by accuracy and expected error.  Thus a final model is generated from all 10,000 observations.   The final random forest model is put to the testing data and predications are generated: B, A, B, A, A, E, D, B, A, A, B, C, B, A, E, E, A, B, B, B. </p>
 
 </body>
 
